@@ -1,6 +1,6 @@
-import Company from "../models/CompanyModel";
+import Company from "../models/CompanyModel.js";
 
 // Function to get a single company by ID
-export const getCompany = async (id) => {
-  return await Company.findById(id);
+export const getCompanyByID = async (id) => {
+  return await Company.findOne({ id });
 };
