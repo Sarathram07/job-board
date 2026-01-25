@@ -1,35 +1,44 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { ApolloProvider } from "@apollo/client/react";
+import { useState } from "react";
+import { useNavigate } from "react-router";
+import { Route, Routes } from "react-router-dom";
+import { getUser } from "./lib/auth";
+import { apolloClient } from "./lib/graphql/queries.js";
+import NavBar from "./components/NavBar";
+import CompanyPage from "./pages/CompanyPage";
+import CreateJobPage from "./pages/CreateJobPage";
+import HomePage from "./pages/HomePage";
+import JobPage from "./pages/JobPage";
+import LoginPage from "./pages/LoginPage";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const navigate = useNavigate();
+  const [user, setUser] = useState(getUser);
+
+  const handleLogin = (user) => {
+    setUser(user);
+    navigate("/");
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    navigate("/");
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <ApolloProvider client={apolloClient}>
+      <NavBar user={user} onLogout={handleLogout} />
+      <main className="section">
+        <Routes>
+          <Route index path="/" element={<HomePage />} />
+          <Route path="/companies/:companyId" element={<CompanyPage />} />
+          <Route path="/jobs/new" element={<CreateJobPage />} />
+          <Route path="/jobs/:jobId" element={<JobPage />} />
+          <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
+        </Routes>
+      </main>
+    </ApolloProvider>
+  );
 }
 
-export default App
+export default App;
