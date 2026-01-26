@@ -7,8 +7,10 @@ import cookieParser from "cookie-parser";
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware as apolloMiddleware } from "@apollo/server/express4";
 import { readFile } from "node:fs/promises";
+
 import { resolvers } from "./graphApi/resolvers.js";
 
+// -----------------------------------------------------EXPRESS_CONFIG---------------------------------------------------------------
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -26,6 +28,8 @@ app.use(
   }),
 );
 app.use(cookieParser());
+
+// -----------------------------------------------------APOLLO_SERVER---------------------------------------------------------------
 
 const typeDefs = await readFile("./graphApi/schema.graphql", "utf-8");
 

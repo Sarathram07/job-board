@@ -4,4 +4,3 @@ import Company from "../models/CompanyModel.js";
 export const getCompanyByID = async (id) => {
   return await Company.findOne({ id });
 };
-

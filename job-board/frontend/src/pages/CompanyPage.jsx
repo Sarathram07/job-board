@@ -3,7 +3,7 @@ import JobList from "../components/JobList";
 //import { useCompany } from "../lib/graphql/hooks";
 import { useState, useEffect } from "react";
 
-import { getCompanyByID } from "../lib/graphql/queries.js";
+import { getCompanyByID } from "../lib/graphql/query/queries.js";
 
 function CompanyPage() {
   const { companyId } = useParams();

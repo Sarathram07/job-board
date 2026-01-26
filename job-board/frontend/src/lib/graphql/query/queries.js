@@ -93,65 +93,38 @@ export const apolloClient = new ApolloClient({
 // `;
 
 import { GraphQLClient, gql } from "graphql-request";
+import { CREATE_NEW_JOB, GET_ALL_JOBS, GET_JOB_BY_ID } from "./jobQuery.js";
+import { GET_COMPANY_BY_ID } from "./companyQuery.js";
 
 const endPoint =
   import.meta.env.VITE_SERVER_URL || "http://localhost:9000/graphql";
 
 const client = new GraphQLClient(endPoint);
 
+// ------------------------------------------------------JOB_REQUEST----------------------------------------------------------------
 export async function getAllJobs() {
-  const query = gql`
-    query {
-      jobs {
-        id
-        title
-        company {
-          id
-          name
-        }
-        date
-      }
-    }
-  `;
-
-  const { jobs } = await client.request(query);
+  const { jobs } = await client.request(GET_ALL_JOBS);
   return jobs;
 }
-
 export async function getJobBasedID(id) {
-  const query = gql`
-    query getJob($id: ID!) {
-      job(id: $id) {
-        id
-        title
-        date
-        company {
-          id
-          name
-        }
-      }
-    }
-  `;
-
-  const { job } = await client.request(query, { id });
+  const { job } = await client.request(GET_JOB_BY_ID, { id });
   return job;
 }
 
-export async function getCompanyByID(id) {
-  const query = gql`
-    query getCompany($id: ID!) {
-      company(id: $id) {
-        id
-        name
-        jobs {
-          id
-          title
-          date
-        }
-      }
-    }
-  `;
+export async function createNewJob(contents) {
+  const { title, description } = contents;
+  const body = {
+    data: { title, description },
+  };
+  const { job: newJob } = await client.request(CREATE_NEW_JOB, body);
+  return newJob;
+}
 
-  const { company } = await client.request(query, { id });
+// ------------------------------------------------------COMPANY_REQUEST----------------------------------------------------------------
+
+export async function getCompanyByID(id) {
+  const { company } = await client.request(GET_COMPANY_BY_ID, { id });
   return company;
 }
+
+// ------------------------------------------------------USER_REQUEST----------------------------------------------------------------

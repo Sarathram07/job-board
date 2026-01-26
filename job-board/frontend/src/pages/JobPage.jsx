@@ -4,7 +4,7 @@ import { formatDate } from "../lib/formatters.js";
 //import { useJob } from "../lib/graphql/hooks";
 import { useState, useEffect } from "react";
 
-import { getJobBasedID } from "../lib/graphql/queries.js";
+import { getJobBasedID } from "../lib/graphql/query/queries.js";
 
 function JobPage() {
   const { jobId } = useParams();

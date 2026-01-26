@@ -1,20 +1,41 @@
+#Output Type
 type Job {
-    id: ID!
-    title: String!
-    description: String
-    company: Company!
-    date: String!
+  id: ID!
+  title: String!
+  description: String
+  company: Company!
+  date: String!
 }
 
 type Company {
-    id: ID!
-    name: String!
-    description: String
-    jobs: [Job!]!
+  id: ID!
+  name: String!
+  description: String
+  jobs: [Job!]!
 }
 
+# Input Type - only can be used as args
+input CreateJobInput {
+  title: String!
+  description: String
+}
+
+input UpdateJobInput {
+  id: ID!
+  title: String!
+  description: String
+}
+
+# QUERY
 type Query {
-    jobs: [Job!]
-    job(id: ID!): Job
-    company(id: ID!): Company
+  jobs: [Job!]
+  job(id: ID!): Job
+  company(id: ID!): Company
+}
+
+# MUTATION
+type Mutation {
+  createJob(input: CreateJobInput!): Job
+  deleteJob(id: ID!): Job
+  updateJob(input: UpdateJobInput!): Job
 }

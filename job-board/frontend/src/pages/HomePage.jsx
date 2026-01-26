@@ -2,7 +2,7 @@ import { useState } from "react";
 import JobList from "../components/JobList";
 //import PaginationBar from "../components/PaginationBar";
 //import { useJobs } from "../lib/graphql/hooks";
-import { getAllJobs } from "../lib/graphql/queries.js";
+import { getAllJobs } from "../lib/graphql/query/queries.js";
 import { useEffect } from "react";
 
 const JOBS_PER_PAGE = 7;
