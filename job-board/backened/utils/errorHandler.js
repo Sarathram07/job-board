@@ -19,3 +19,11 @@ export const handleJobError = (data, id) => {
     });
   }
 };
+
+export const handleAuthError = (msg) => {
+  throw new GraphQLError(msg, {
+    extensions: {
+      code: "UNAUTHORIZED",
+    },
+  });
+};

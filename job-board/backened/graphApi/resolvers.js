@@ -8,7 +8,11 @@ import {
   updateJobByID,
 } from "../controllers/JobController.js";
 import { extractDate } from "../utils/convertion.js";
-import { handleCompanyError, handleJobError } from "../utils/errorHandler.js";
+import {
+  handleAuthError,
+  handleCompanyError,
+  handleJobError,
+} from "../utils/errorHandler.js";
 
 export const resolvers = {
   Query: {
@@ -44,20 +48,30 @@ export const resolvers = {
   },
 
   Mutation: {
-    createJob: (_root, args) => {
+    createJob: (_root, args, context) => {
+      const user = requireAuth(context);
       const { title, description } = args.input;
-      const companyId = "Gu7QW9LcnF5d";
+      const companyId = user.companyId;
       return createJob({ companyId, title, description });
     },
 
-    deleteJob: (_root, args) => {
+    deleteJob: (_root, args, context) => {
+      const user = requireAuth(context);
       const { id } = args;
-      return deleteJobByID(id);
+      return deleteJobByID(id, user.companyId);
     },
 
-    updateJob: (_root, args) => {
+    updateJob: (_root, args, context) => {
+      const user = requireAuth(context);
       const { id, title, description } = args.input;
-      return updateJobByID(id, title, description);
+      return updateJobByID(id, user.companyId, title, description);
     },
   },
+};
+
+const requireAuth = (context) => {
+  if (!context?.user) {
+    handleAuthError("Un-authorized Access");
+  }
+  return context.user;
 };

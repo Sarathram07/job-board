@@ -9,6 +9,8 @@ function CreateJobPage() {
   const [description, setDescription] = useState("");
   //const { createJob, loading } = useCreateJob();
 
+  const loading = false;
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     // const job = await createJob(title, description);

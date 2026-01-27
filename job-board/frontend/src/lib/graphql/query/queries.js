@@ -92,14 +92,26 @@ export const apolloClient = new ApolloClient({
 //   ${jobDetailFragment}
 // `;
 
-import { GraphQLClient, gql } from "graphql-request";
+import { GraphQLClient } from "graphql-request";
 import { CREATE_NEW_JOB, GET_ALL_JOBS, GET_JOB_BY_ID } from "./jobQuery.js";
 import { GET_COMPANY_BY_ID } from "./companyQuery.js";
+import { getAccessToken } from "../../auth.js";
 
 const endPoint =
   import.meta.env.VITE_SERVER_URL || "http://localhost:9000/graphql";
 
-const client = new GraphQLClient(endPoint);
+const optionConfig = {
+  headers: () => {
+    const accessToken = getAccessToken();
+    if (accessToken) {
+      return {
+        Authorization: `Bearer ${accessToken}`,
+      };
+    }
+    return {};
+  },
+};
+const client = new GraphQLClient(endPoint, optionConfig);
 
 // ------------------------------------------------------JOB_REQUEST----------------------------------------------------------------
 export async function getAllJobs() {

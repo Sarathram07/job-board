@@ -3,7 +3,7 @@
 // for better security. Also, it doesn't handle token expiration.
 import { jwtDecode } from "jwt-decode";
 
-const API_URL = import.meta.env.LOGIN_URL;
+const API_URL = import.meta.env.VITE_LOGIN_URL;
 
 const ACCESS_TOKEN_KEY = "accessToken";
 
@@ -12,6 +12,7 @@ export function getAccessToken() {
 }
 
 export async function login(email, password) {
+  console.log("API_URL:", API_URL);
   const response = await fetch(`${API_URL}/login`, {
     method: "POST",
     headers: {
