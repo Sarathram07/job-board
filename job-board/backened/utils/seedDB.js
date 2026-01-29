@@ -41,7 +41,7 @@ const jobsData = [
     companyId: "FjcJCHJALA4i",
     title: "Frontend Developer",
     description: "We are looking for a Frontend Developer familiar with React.",
-    createdAt: new Date("2025-01-26T11:00:00.000Z"),
+    // createdAt: new Date("2025-01-26T11:00:00.000Z"),
   },
   {
     id: "XYZNJMXFax6n",
@@ -49,7 +49,7 @@ const jobsData = [
     title: "Backend Developer",
     description:
       "We are looking for a Backend Developer familiar with Node.js and Express.",
-    createdAt: new Date("2025-01-27T11:00:00.000Z"),
+    //createdAt: new Date("2025-01-27T11:00:00.000Z"),
   },
   {
     id: "6mA05AZxvS1R",
@@ -57,7 +57,7 @@ const jobsData = [
     title: "Full-Stack Developer",
     description:
       "We are looking for a Full-Stack Developer familiar with Node.js, Express, and React.",
-    createdAt: new Date("2025-01-30T11:00:00.000Z"),
+    // createdAt: new Date("2025-01-30T11:00:00.000Z"),
   },
 ];
 

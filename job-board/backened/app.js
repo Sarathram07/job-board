@@ -7,8 +7,12 @@ import cookieParser from "cookie-parser";
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware as apolloMiddleware } from "@apollo/server/express4";
 import { readFile } from "node:fs/promises";
-import { resolvers } from "./graphApi/resolvers.js";
 
+import { resolvers } from "./graphApi/resolvers.js";
+import { authMiddleware, handleLogin } from "./middleware/authentication.js";
+import { getUserById } from "./controllers/UserController.js";
+
+// -----------------------------------------------------EXPRESS_CONFIG---------------------------------------------------------------
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -27,7 +31,21 @@ app.use(
 );
 app.use(cookieParser());
 
+app.use(authMiddleware);
+
+app.use("/login", handleLogin);
+
+// -----------------------------------------------------APOLLO_SERVER---------------------------------------------------------------
+
 const typeDefs = await readFile("./graphApi/schema.graphql", "utf-8");
+
+async function getContext({ req, res }) {
+  if (req.auth) {
+    const user = await getUserById(req.auth.sub);
+    return { user };
+  }
+  return {};
+}
 
 const apolloServer = new ApolloServer({
   typeDefs,
@@ -36,6 +54,6 @@ const apolloServer = new ApolloServer({
 
 await apolloServer.start();
 
-app.use("/graphql", apolloMiddleware(apolloServer));
+app.use("/graphql", apolloMiddleware(apolloServer, { context: getContext }));
 
 export default app;

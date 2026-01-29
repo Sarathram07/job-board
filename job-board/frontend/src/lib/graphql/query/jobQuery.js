@@ -1,0 +1,42 @@
+import { gql } from "graphql-request";
+
+export const GET_JOB_BY_ID = gql`
+  query getJob($id: ID!) {
+    job(id: $id) {
+      id
+      title
+      date
+      company {
+        id
+        name
+      }
+    }
+  }
+`;
+
+export const GET_ALL_JOBS = gql`
+  query getAllJobs {
+    jobs {
+      id
+      title
+      company {
+        id
+        name
+      }
+      date
+    }
+  }
+`;
+
+export const CREATE_NEW_JOB = gql`
+  mutation newJob($data: CreateJobInput!) {
+    job: createJob(input: $data) {
+      id
+      title
+      description
+      company {
+        id
+      }
+    }
+  }
+`;
