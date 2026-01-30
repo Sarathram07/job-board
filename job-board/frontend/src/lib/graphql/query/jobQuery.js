@@ -1,4 +1,4 @@
-import { gql } from "graphql-request";
+import { gql } from "@apollo/client";
 
 export const GET_JOB_BY_ID = gql`
   query getJob($id: ID!) {
@@ -33,9 +33,11 @@ export const CREATE_NEW_JOB = gql`
     job: createJob(input: $data) {
       id
       title
+      date
       description
       company {
         id
+        name
       }
     }
   }

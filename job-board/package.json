@@ -1,5 +1,6 @@
-{ "name": "job-board",
-    "scripts": {
+{
+  "name": "job-board",
+  "scripts": {
     "seeder": "node backened/utils/seedDB.js",
     "server": "cd backened && npm run server",
     "client": "cd frontend && npm run dev"

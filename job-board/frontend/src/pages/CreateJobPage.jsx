@@ -13,7 +13,6 @@ function CreateJobPage() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    // const job = await createJob(title, description);
     const contents = { title, description };
     const createdJob = await createNewJob(contents);
     console.log("job created:", createdJob);
