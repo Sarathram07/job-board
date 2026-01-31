@@ -1,9 +1,7 @@
-import { useState } from "react";
+//import { useState , useEffect } from "react";
 import JobList from "../components/JobList";
 //import PaginationBar from "../components/PaginationBar";
-//import { useJobs } from "../lib/graphql/hooks";
-import { getAllJobs } from "../lib/graphql/query/queries.js";
-import { useEffect } from "react";
+import { useAllJobs } from "../lib/graphql/hooks/hook.js";
 
 const JOBS_PER_PAGE = 7;
 
@@ -15,12 +13,7 @@ function HomePage() {
   // );
 
   // console.log("[HomePage]", { jobs, loading, error });
-  // if (loading) {
-  //   return <div>Loading...</div>;
-  // }
-  // if (error) {
-  //   return <div className="has-text-danger">Data unavailable</div>;
-  // }
+
   // const totalPages = Math.ceil(jobs.totalCount / JOBS_PER_PAGE);
 
   // const dataFromDb = async () => {
@@ -29,11 +22,19 @@ function HomePage() {
   // };
   //dataFromDb();
 
-  const [jobs, setJobs] = useState([]);
+  // const [jobs, setJobs] = useState([]);
 
-  useEffect(() => {
-    getAllJobs().then((job) => setJobs(job));
-  }, []);
+  // useEffect(() => {
+  //   getAllJobs().then((job) => setJobs(job));
+  // }, []);
+
+  const { jobs, loading, error } = useAllJobs();
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  if (error) {
+    return <div className="has-text-danger">Data unavailable</div>;
+  }
 
   return (
     <div>

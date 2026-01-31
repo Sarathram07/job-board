@@ -1,0 +1,81 @@
+import { useMutation, useQuery } from "@apollo/client/react";
+
+import { GET_COMPANY_BY_ID } from "../query/companyQuery.js";
+import {
+  CREATE_NEW_JOB,
+  GET_ALL_JOBS,
+  GET_JOB_BY_ID,
+} from "../query/jobQuery.js";
+
+// ------------------------------------------------------COMPANY_HOOK-------------------------------------------------------------
+function useCompany(companyId) {
+  const { data, loading, error } = useQuery(GET_COMPANY_BY_ID, {
+    variables: { id: companyId },
+  });
+
+  return {
+    company: data?.company,
+    loading,
+    error: Boolean(error),
+  };
+}
+// ------------------------------------------------------JOB_HOOK----------------------------------------------------------------
+function useJob(jobId) {
+  const { data, loading, error } = useQuery(GET_JOB_BY_ID, {
+    variables: { id: jobId },
+  });
+
+  return {
+    job: data?.job,
+    loading,
+    error: Boolean(error),
+  };
+}
+
+function useAllJobs() {
+  const { data, loading, error } = useQuery(GET_ALL_JOBS, {
+    fetchPolicy: "network-only",
+  });
+  return {
+    jobs: data?.jobs,
+    loading,
+    error: Boolean(error),
+  };
+}
+
+function useCreateJob() {
+  // const [fn, result] = useMutation(CREATE_NEW_JOB);
+  const [createJobMutation, result] = useMutation(CREATE_NEW_JOB);
+  const { loading, error } = result;
+
+  const createNewJob = async (contents) => {
+    const { title, description } = contents;
+    const body = {
+      data: { title, description },
+    };
+
+    const {
+      data: { job: newJob },
+    } = await createJobMutation({
+      variables: body,
+      //context: { headers: { Authorization: `Bearer ${getAccessToken()}` } },
+      update: (cache, { data }) => {
+        // cache -  instance used for modify apollo cache directly
+        //console.log(data.job);
+        cache.writeQuery({
+          query: GET_JOB_BY_ID,
+          variables: { id: data.job.id },
+          data,
+        });
+      },
+    });
+    return newJob;
+  };
+  return {
+    createNewJob,
+    loading,
+    error,
+  };
+}
+
+export { useCompany, useJob, useAllJobs, useCreateJob };

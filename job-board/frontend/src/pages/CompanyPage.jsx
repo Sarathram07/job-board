@@ -1,43 +1,44 @@
 import { useParams } from "react-router";
 import JobList from "../components/JobList";
-//import { useCompany } from "../lib/graphql/hooks";
-import { useState, useEffect } from "react";
-
-import { getCompanyByID } from "../lib/graphql/query/queries.js";
+import { useCompany } from "../lib/graphql/hooks/hook.js";
+// import { useState, useEffect } from "react";
+// import { getCompanyByID } from "../lib/graphql/query/queries.js";
+//import { GET_COMPANY_BY_ID } from "../lib/graphql/query/companyQuery.js";
 
 function CompanyPage() {
   const { companyId } = useParams();
   // const { company, loading, error } = useCompany(companyId);
-
   // console.log('[CompanyPage]', { company, loading, error });
 
-  const [stateData, setStateData] = useState({
-    companyData: null,
-    loading: true,
-    error: false,
-  });
+  // const [stateData, setStateData] = useState({
+  //   companyData: null,
+  //   loading: true,
+  //   error: false,
+  // });
 
-  const { companyData: company, loading, error } = stateData;
+  // const { companyData: company, loading, error } = stateData;
 
-  useEffect(() => {
-    // getCompanyByID(companyId).then((data) => setCompany(data));
-    (async () => {
-      try {
-        const dataFromDB = await getCompanyByID(companyId);
-        setStateData((prev) => ({
-          ...prev,
-          companyData: dataFromDB,
-          loading: false,
-        }));
-      } catch (err) {
-        setStateData((prev) => ({
-          ...prev,
-          loading: false,
-          error: true,
-        }));
-      }
-    })();
-  }, [companyId]);
+  // useEffect(() => {
+  //   // getCompanyByID(companyId).then((data) => setCompany(data));
+  //   (async () => {
+  //     try {
+  //       const dataFromDB = await getCompanyByID(companyId);
+  //       setStateData((prev) => ({
+  //         ...prev,
+  //         companyData: dataFromDB,
+  //         loading: false,
+  //       }));
+  //     } catch (err) {
+  //       setStateData((prev) => ({
+  //         ...prev,
+  //         loading: false,
+  //         error: true,
+  //       }));
+  //     }
+  //   })();
+  // }, [companyId]);
+
+  const { company, loading, error } = useCompany(companyId);
 
   if (loading) {
     return <div> Loading... </div>;
