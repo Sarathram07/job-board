@@ -1,4 +1,7 @@
-import { getCompanyByID } from "../controllers/CompanyController.js";
+import {
+  companyLoader,
+  getCompanyByID,
+} from "../controllers/CompanyController.js";
 import {
   createJob,
   deleteJobByID,
@@ -40,7 +43,9 @@ export const resolvers = {
 
   Job: {
     date: (job) => extractDate(job.createdAt),
-    company: (job) => getCompanyByID(job.companyId),
+    //company: (job) => getCompanyByID(job.companyId),
+    company: (job, _args, { companyLoader }) =>
+      companyLoader.load(job.companyId),
   },
 
   Company: {
