@@ -32,8 +32,9 @@ function useJob(jobId) {
   };
 }
 
-function useAllJobs() {
+function useAllJobs(limit, offset) {
   const { data, loading, error } = useQuery(GET_ALL_JOBS, {
+    variables: { limit, offset },
     fetchPolicy: "network-only",
   });
   return {
