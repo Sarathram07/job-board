@@ -1,8 +1,26 @@
 import { v4 as uuidv4 } from "uuid";
 import JobModel from "../models/JobModel.js";
 
-export async function getJobs() {
-  return await JobModel.find({});
+// export async function getJobs() {
+//   return await JobModel.find({});
+// }
+
+export async function getTotalJobCount() {
+  return await JobModel.countDocuments();
+}
+
+export async function getJobs(limit, offset) {
+  const query = JobModel.find().sort({ createdAt: -1 });
+
+  if (limit) {
+    query.limit(limit);
+  }
+
+  if (offset) {
+    query.skip(offset);
+  }
+
+  return await query;
 }
 
 export async function getJobById(id) {

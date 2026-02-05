@@ -1,10 +1,14 @@
-import { getCompanyByID } from "../controllers/CompanyController.js";
+import {
+  companyLoader,
+  getCompanyByID,
+} from "../controllers/CompanyController.js";
 import {
   createJob,
   deleteJobByID,
   getAllJobById,
   getJobById,
   getJobs,
+  getTotalJobCount,
   updateJobByID,
 } from "../controllers/JobController.js";
 import { extractDate } from "../utils/convertion.js";
@@ -16,9 +20,15 @@ import {
 
 export const resolvers = {
   Query: {
-    jobs: () => {
-      const jobs = getJobs();
-      return jobs;
+    // jobs: () => {
+    //   const jobs = getJobs();
+    //   return jobs;
+    // },
+    jobs: (_root, args) => {
+      const { limit, offset } = args;
+      const totalPagesCount = getTotalJobCount();
+      const allJobs = getJobs(limit, offset);
+      return { items: allJobs, totalCount: totalPagesCount };
     },
     job: async (_root, args) => {
       const id = args.id;
@@ -40,7 +50,9 @@ export const resolvers = {
 
   Job: {
     date: (job) => extractDate(job.createdAt),
-    company: (job) => getCompanyByID(job.companyId),
+    //company: (job) => getCompanyByID(job.companyId),
+    company: (job, _args, { companyLoader }) =>
+      companyLoader.load(job.companyId),
   },
 
   Company: {

@@ -1,4 +1,4 @@
-import { gql } from "graphql-request";
+import { gql } from "@apollo/client";
 
 export const GET_JOB_BY_ID = gql`
   query getJob($id: ID!) {
@@ -15,15 +15,18 @@ export const GET_JOB_BY_ID = gql`
 `;
 
 export const GET_ALL_JOBS = gql`
-  query getAllJobs {
-    jobs {
-      id
-      title
-      company {
+  query getAllJobs($limit: Int, $offset: Int) {
+    jobs(limit: $limit, offset: $offset) {
+      totalCount
+      items {
         id
-        name
+        title
+        company {
+          id
+          name
+        }
+        date
       }
-      date
     }
   }
 `;
@@ -33,9 +36,11 @@ export const CREATE_NEW_JOB = gql`
     job: createJob(input: $data) {
       id
       title
+      date
       description
       company {
         id
+        name
       }
     }
   }

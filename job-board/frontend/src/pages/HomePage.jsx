@@ -1,48 +1,56 @@
 import { useState } from "react";
 import JobList from "../components/JobList";
-//import PaginationBar from "../components/PaginationBar";
-//import { useJobs } from "../lib/graphql/hooks";
-import { getAllJobs } from "../lib/graphql/query/queries.js";
-import { useEffect } from "react";
+import PaginationBar from "../components/PaginationBar";
+import { useAllJobs } from "../lib/graphql/hooks/hook.js";
 
-const JOBS_PER_PAGE = 7;
+const JOBS_PER_PAGE = 5;
 
 function HomePage() {
-  // const [currentPage, setCurrentPage] = useState(1);
-  // const { jobs, loading, error } = useJobs(
-  //   JOBS_PER_PAGE,
-  //   (currentPage - 1) * JOBS_PER_PAGE,
-  // );
+  // const [jobs, setJobs] = useState([]);
+  // useEffect(() => {
+  //   getAllJobs().then((job) => setJobs(job));
+  // }, []);
 
-  // console.log("[HomePage]", { jobs, loading, error });
-  // if (loading) {
-  //   return <div>Loading...</div>;
-  // }
-  // if (error) {
-  //   return <div className="has-text-danger">Data unavailable</div>;
-  // }
-  // const totalPages = Math.ceil(jobs.totalCount / JOBS_PER_PAGE);
+  const [currentPage, setCurrentPage] = useState(1);
+  const { jobs, loading, error } = useAllJobs(
+    JOBS_PER_PAGE,
+    (currentPage - 1) * JOBS_PER_PAGE,
+  );
+  const totalPages = jobs ? Math.ceil(jobs.totalCount / JOBS_PER_PAGE) : 0;
 
-  // const dataFromDb = async () => {
-  //   const dbdata = await getAllJobs();
-  //   console.log(dbdata);
-  // };
-  //dataFromDb();
-
-  const [jobs, setJobs] = useState([]);
-
-  useEffect(() => {
-    getAllJobs().then((job) => setJobs(job));
-  }, []);
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+  if (error) {
+    return <div className="has-text-danger">Data unavailable</div>;
+  }
 
   return (
     <div>
       <h1 className="title">Job Board</h1>
-      {/* <PaginationBar currentPage={currentPage} totalPages={totalPages}
+      <JobList jobs={jobs.items} />
+
+      <PaginationBar
+        currentPage={currentPage}
+        totalPages={totalPages}
         onPageChange={setCurrentPage}
-      /> */}
-      {/* <JobList jobs={jobs.items} />  */}
-      <JobList jobs={jobs} />
+      />
+
+      {/* <div>
+        <button
+          onClick={() => setCurrentPage(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          Prev
+        </button>
+        <span>{`${currentPage} of ${totalPages}`} </span>
+        <button
+          onClick={() => setCurrentPage(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
+      </div> */}
     </div>
   );
 }

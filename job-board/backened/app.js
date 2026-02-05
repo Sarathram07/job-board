@@ -11,6 +11,7 @@ import { readFile } from "node:fs/promises";
 import { resolvers } from "./graphApi/resolvers.js";
 import { authMiddleware, handleLogin } from "./middleware/authentication.js";
 import { getUserById } from "./controllers/UserController.js";
+import { createCompanyLoader } from "./controllers/CompanyController.js";
 
 // -----------------------------------------------------EXPRESS_CONFIG---------------------------------------------------------------
 const __filename = fileURLToPath(import.meta.url);
@@ -40,11 +41,12 @@ app.use("/login", handleLogin);
 const typeDefs = await readFile("./graphApi/schema.graphql", "utf-8");
 
 async function getContext({ req, res }) {
+  const companyLoader = createCompanyLoader();
+  const context = { companyLoader };
   if (req.auth) {
-    const user = await getUserById(req.auth.sub);
-    return { user };
+    context.user = await getUserById(req.auth.sub);
   }
-  return {};
+  return context;
 }
 
 const apolloServer = new ApolloServer({
