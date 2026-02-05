@@ -7,6 +7,10 @@ const server = app.listen(process.env.PORT, () => {
   console.log(
     `Server listening to the port: ${process.env.PORT} in  ${process.env.NODE_ENV} `,
   );
+  console.log(`GraphQL endpoint: http://localhost:${process.env.PORT}/graphql`);
+  console.log(
+    "--------------------------------------------------------------------------",
+  );
 });
 
 // used to listen for events emitted by the Node.js process itself.

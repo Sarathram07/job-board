@@ -11,6 +11,7 @@ import {
   getTotalJobCount,
   updateJobByID,
 } from "../controllers/JobController.js";
+import { createMessage, getAllMessages } from "../controllers/MessageController.js";
 import { extractDate } from "../utils/convertion.js";
 import {
   handleAuthError,
@@ -19,6 +20,17 @@ import {
 } from "../utils/errorHandler.js";
 
 export const resolvers = {
+  Job: {
+    date: (job) => extractDate(job.createdAt),
+    //company: (job) => getCompanyByID(job.companyId),
+    company: (job, _args, { companyLoader }) =>
+      companyLoader.load(job.companyId),
+  },
+
+  Company: {
+    jobs: (comp) => getAllJobById(comp.id),
+  },
+
   Query: {
     // jobs: () => {
     //   const jobs = getJobs();
@@ -46,17 +58,11 @@ export const resolvers = {
       }
       return companyFromDB;
     },
-  },
 
-  Job: {
-    date: (job) => extractDate(job.createdAt),
-    //company: (job) => getCompanyByID(job.companyId),
-    company: (job, _args, { companyLoader }) =>
-      companyLoader.load(job.companyId),
-  },
-
-  Company: {
-    jobs: (comp) => getAllJobById(comp.id),
+    messages: async (_root, _args, context) => {
+      const user = requireAuth(context);
+      return getAllMessages();
+    },
   },
 
   Mutation: {
@@ -65,6 +71,11 @@ export const resolvers = {
       const { title, description } = args.input;
       const companyId = user.companyId;
       return createJob({ companyId, title, description });
+    },
+
+    addMessage: (_root, { text }, { user }) => {
+      if (!user) throw unauthorizedError();
+      return createMessage(user, text);
     },
 
     deleteJob: (_root, args, context) => {

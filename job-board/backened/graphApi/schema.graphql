@@ -14,6 +14,12 @@ type Company {
   jobs: [Job!]!
 }
 
+type Message {
+  id: ID!
+  user: String!
+  text: String!
+}
+
 # Input Type - only can be used as args
 input CreateJobInput {
   title: String!
@@ -37,6 +43,7 @@ type Query {
   jobs(limit: Int, offset: Int): JobSubList
   job(id: ID!): Job
   company(id: ID!): Company
+  messages: [Message!]
 }
 
 # MUTATION
@@ -44,4 +51,5 @@ type Mutation {
   createJob(input: CreateJobInput!): Job
   deleteJob(id: ID!): Job
   updateJob(input: UpdateJobInput!): Job
+  addMessage(text: String!): Message
 }

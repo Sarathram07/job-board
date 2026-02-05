@@ -6,6 +6,7 @@ import {
   GET_ALL_JOBS,
   GET_JOB_BY_ID,
 } from "../query/jobQuery.js";
+import { CREATE_NEW_MESSAGE, GET_ALL_MESSAGES } from "../query/messageQuery.js";
 
 // ------------------------------------------------------COMPANY_HOOK-------------------------------------------------------------
 function useCompany(companyId) {
@@ -19,6 +20,7 @@ function useCompany(companyId) {
     error: Boolean(error),
   };
 }
+
 // ------------------------------------------------------JOB_HOOK----------------------------------------------------------------
 function useJob(jobId) {
   const { data, loading, error } = useQuery(GET_JOB_BY_ID, {
@@ -79,4 +81,35 @@ function useCreateJob() {
   };
 }
 
-export { useCompany, useJob, useAllJobs, useCreateJob };
+// ------------------------------------------------------MESSAGE_HOOK------------------------------------------------------------
+
+function useMessages() {
+  const { data } = useQuery(GET_ALL_MESSAGES, { fetchPolicy: "network-only" });
+  return {
+    messages: data?.messages ?? [],
+  };
+}
+
+function useAddMessage() {
+  const [newMessageMutation] = useMutation(CREATE_NEW_MESSAGE);
+
+  const addMessage = async (text) => {
+    const {
+      data: { message },
+    } = await newMessageMutation({
+      variables: { text },
+    });
+    return message;
+  };
+
+  return { addMessage };
+}
+
+export {
+  useCompany,
+  useJob,
+  useAllJobs,
+  useCreateJob,
+  useMessages,
+  useAddMessage,
+};

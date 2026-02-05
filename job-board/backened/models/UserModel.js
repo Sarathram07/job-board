@@ -12,6 +12,10 @@ const userSchema = new mongoose.Schema(
       type: String, // UUID of Company
       required: true,
     },
+    name: {
+      type: String, // UUID of Company
+      required: true,
+    },
     email: {
       type: String,
       required: true,

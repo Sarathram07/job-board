@@ -1,0 +1,10 @@
+.navbar-chat {
+  background-color: #d4eafc;
+}
+
+.button-centered {
+  text-align: center;
+  position: relative;
+  left: 50%;
+  transform: translateX(-50%);
+}
