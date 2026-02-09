@@ -53,3 +53,7 @@ type Mutation {
   updateJob(input: UpdateJobInput!): Job
   addMessage(text: String!): Message
 }
+
+type Subscription {
+  messageAdded: Message
+}

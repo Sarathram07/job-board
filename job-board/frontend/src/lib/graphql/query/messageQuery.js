@@ -19,3 +19,15 @@ export const CREATE_NEW_MESSAGE = gql`
     }
   }
 `;
+
+// ------------------------------------------------------SUBSCRIPTION----------------------------------------------------------------
+
+export const MESSAGE_ADDED_SUBSCRIPTION = gql`
+  subscription msgAdded {
+    message: messageAdded {
+      id
+      user
+      text
+    }
+  }
+`;

@@ -1,62 +1,67 @@
-import { ApolloClient, InMemoryCache, ApolloLink } from "@apollo/client";
-import { HttpLink } from "@apollo/client/link/http";
+import { apolloClient } from "./client.js";
 
 import { CREATE_NEW_JOB, GET_ALL_JOBS, GET_JOB_BY_ID } from "./jobQuery.js";
 import { GET_COMPANY_BY_ID } from "./companyQuery.js";
-import { getAccessToken } from "../../auth.js";
 
-// -----------------------------------------------------GRAPHQL_CLIENT_SETUP------------------------------------------------
+//------------------------------------------------------JOB_REQUEST----------------------------------------------------------------
 
-// import { GraphQLClient } from "graphql-request";
-// const endPoint =
-//   import.meta.env.VITE_SERVER_URL || "http://localhost:9000/graphql";
+//fetchPolicy: "cache-first" (default) - checks cache first, if not found then makes network request
 
-// const optionConfig = {
-//   headers: () => {
-//     const accessToken = getAccessToken();
-//     if (accessToken) {
-//       return {
-//         Authorization: `Bearer ${accessToken}`,
-//       };
-//     }
-//     return {};
-//   },
-// };
-// const client = new GraphQLClient(endPoint, optionConfig);
-//const { jobs } = await client.request(GET_ALL_JOBS);
-// return jobs;
+export async function getAllJobs() {
+  const result = await apolloClient.query({
+    query: GET_ALL_JOBS,
+    fetchPolicy: "network-only",
+  });
+  return result.data.jobs;
+}
 
-// ------------------------------------------------------APOLLO_CLIENT_SETUP------------------------------------------------
+export async function getJobBasedID(id) {
+  const { data } = await apolloClient.query({
+    query: GET_JOB_BY_ID,
+    variables: { id },
+  });
+  return data.job;
+}
 
-const link = import.meta.env.VITE_SERVER_URL || "http://localhost:9000/graphql";
-console.log(link);
+export async function createNewJob(contents) {
+  const { title, description } = contents;
+  const body = {
+    data: { title, description },
+  };
 
-// terminating link - this case HTTP link
-const httpLink = new HttpLink({ uri: link });
+  const {
+    data: { job: newJob },
+  } = await apolloClient.mutate({
+    mutation: CREATE_NEW_JOB,
+    variables: body,
+    //context: { headers: { Authorization: `Bearer ${getAccessToken()}` } },
+    update: (cache, { data }) => {
+      // cache -  instance used for modify apollo cache directly
+      //console.log(data.job);
+      cache.writeQuery({
+        query: GET_JOB_BY_ID,
+        variables: { id: data.job.id },
+        data,
+      });
+    },
+  });
 
-// custom middleware link to add auth token to headers
-// operation - object represents a GraphQL operation details (query/mutation)
-const authLink = new ApolloLink((operation, forward) => {
-  const accessToken = getAccessToken();
-  if (accessToken) {
-    // context - set of metadata(properties) for the operation ; object where we can put properties to be used for the request
-    operation.setContext({
-      headers: { Authorization: `Bearer ${accessToken}` },
-    });
-  }
-  return forward(operation);
-});
+  return newJob;
+}
 
-export const apolloClient = new ApolloClient({
-  // uri: "http://localhost:9000/graphql" -  using link instead of uri
-  link: ApolloLink.from([authLink, httpLink]), // order of links is important
-  cache: new InMemoryCache(),
-  connectToDevTools: true,
-  // defaultOptions: {
-  //   query: { fetchPolicy: "network-only" },
-  //   watchQuery: { fetchPolicy: "network-only" },
-  // },
-});
+// ------------------------------------------------------COMPANY_REQUEST----------------------------------------------------------------
+
+export async function getCompanyByID(id) {
+  const { data } = await apolloClient.query({
+    query: GET_COMPANY_BY_ID,
+    variables: { id },
+  });
+  return data.company;
+}
+
+// ------------------------------------------------------USER_REQUEST----------------------------------------------------------------
+
+// -----------------------------------------------------QUERIES------------------------------------------------------------------
 
 // const jobDetailFragment = gql`
 //   fragment JobDetail on Job {
@@ -120,61 +125,3 @@ export const apolloClient = new ApolloClient({
 //   }
 //   ${jobDetailFragment}
 // `;
-
-// ------------------------------------------------------JOB_REQUEST----------------------------------------------------------------
-
-// fetchPolicy: "cache-first" (default) - checks cache first, if not found then makes network request
-
-export async function getAllJobs() {
-  const result = await apolloClient.query({
-    query: GET_ALL_JOBS,
-    fetchPolicy: "network-only",
-  });
-  return result.data.jobs;
-}
-
-export async function getJobBasedID(id) {
-  const { data } = await apolloClient.query({
-    query: GET_JOB_BY_ID,
-    variables: { id },
-  });
-  return data.job;
-}
-
-export async function createNewJob(contents) {
-  const { title, description } = contents;
-  const body = {
-    data: { title, description },
-  };
-
-  const {
-    data: { job: newJob },
-  } = await apolloClient.mutate({
-    mutation: CREATE_NEW_JOB,
-    variables: body,
-    //context: { headers: { Authorization: `Bearer ${getAccessToken()}` } },
-    update: (cache, { data }) => {
-      // cache -  instance used for modify apollo cache directly
-      //console.log(data.job);
-      cache.writeQuery({
-        query: GET_JOB_BY_ID,
-        variables: { id: data.job.id },
-        data,
-      });
-    },
-  });
-
-  return newJob;
-}
-
-// ------------------------------------------------------COMPANY_REQUEST----------------------------------------------------------------
-
-export async function getCompanyByID(id) {
-  const { data } = await apolloClient.query({
-    query: GET_COMPANY_BY_ID,
-    variables: { id },
-  });
-  return data.company;
-}
-
-// ------------------------------------------------------USER_REQUEST----------------------------------------------------------------

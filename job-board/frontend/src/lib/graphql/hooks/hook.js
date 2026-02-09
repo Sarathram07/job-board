@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@apollo/client/react";
+import { useMutation, useQuery, useSubscription } from "@apollo/client/react";
 
 import { GET_COMPANY_BY_ID } from "../query/companyQuery.js";
 import {
@@ -6,7 +6,11 @@ import {
   GET_ALL_JOBS,
   GET_JOB_BY_ID,
 } from "../query/jobQuery.js";
-import { CREATE_NEW_MESSAGE, GET_ALL_MESSAGES } from "../query/messageQuery.js";
+import {
+  CREATE_NEW_MESSAGE,
+  GET_ALL_MESSAGES,
+  MESSAGE_ADDED_SUBSCRIPTION,
+} from "../query/messageQuery.js";
 
 // ------------------------------------------------------COMPANY_HOOK-------------------------------------------------------------
 function useCompany(companyId) {
@@ -84,7 +88,17 @@ function useCreateJob() {
 // ------------------------------------------------------MESSAGE_HOOK------------------------------------------------------------
 
 function useMessages() {
-  const { data } = useQuery(GET_ALL_MESSAGES, { fetchPolicy: "network-only" });
+  //const { data } = useQuery(GET_ALL_MESSAGES, { fetchPolicy: "network-only" });
+  const { data } = useQuery(GET_ALL_MESSAGES);
+  useSubscription(MESSAGE_ADDED_SUBSCRIPTION, {
+    onData: (obj) => {
+      const { client, result } = obj;
+      const newMessage = result.data?.message;
+      client.cache.updateQuery({ query: GET_ALL_MESSAGES }, (oldData) => {
+        return { messages: [...oldData.messages, newMessage] };
+      });
+    },
+  });
   return {
     messages: data?.messages ?? [],
   };
@@ -98,6 +112,12 @@ function useAddMessage() {
       data: { message },
     } = await newMessageMutation({
       variables: { text },
+      // update: (cache, { data }) => {
+      //   const msg = data.message;
+      //   cache.updateQuery({ query: GET_ALL_MESSAGES }, (oldData) => {
+      //     return { messages: [...oldData.messages, msg] };
+      //   });
+      // },
     });
     return message;
   };
