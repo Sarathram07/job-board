@@ -3,13 +3,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Route, Routes } from "react-router-dom";
 import { getUser } from "./lib/auth";
-import { apolloClient } from "./lib/graphql/query/queries.js";
+import { apolloClient } from "./lib/graphql/client.js";
 import NavBar from "./components/NavBar";
 import CompanyPage from "./pages/CompanyPage";
 import CreateJobPage from "./pages/CreateJobPage";
 import HomePage from "./pages/HomePage";
 import JobPage from "./pages/JobPage";
 import LoginPage from "./pages/LoginPage";
+import Chat from "./components/chat.jsx";
 
 function App() {
   const navigate = useNavigate();
@@ -35,6 +36,7 @@ function App() {
           <Route path="/jobs/new" element={<CreateJobPage />} />
           <Route path="/jobs/:jobId" element={<JobPage />} />
           <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
+          <Route path="/chat" element={<Chat user={user} />} />
         </Routes>
       </main>
     </ApolloProvider>

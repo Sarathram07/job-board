@@ -2,6 +2,7 @@ import { useState } from "react";
 import { login } from "../lib/auth";
 
 function LoginPage({ onLogin }) {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(false);
@@ -9,7 +10,10 @@ function LoginPage({ onLogin }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError(false);
-    const user = await login(email, password);
+    const data = {
+      name, email, password
+    }
+    const user = await login(data);
     if (user) {
       onLogin(user);
     } else {
@@ -20,6 +24,16 @@ function LoginPage({ onLogin }) {
   return (
     <form onSubmit={handleSubmit}>
       <div className="field">
+        <label className="label">Name</label>
+        <div className="control">
+          <input
+            className="input"
+            type="text"
+            required
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+          />
+        </div>
         <label className="label">Email</label>
         <div className="control">
           <input

@@ -7,9 +7,19 @@ import cookieParser from "cookie-parser";
 import { ApolloServer } from "@apollo/server";
 import { expressMiddleware as apolloMiddleware } from "@apollo/server/express4";
 import { readFile } from "node:fs/promises";
+import { WebSocketServer } from "ws";
+import { createServer as createHttpServer } from "node:http";
+//import { useServer as useWsServer } from "graphql-ws/lib/use/ws.js";
+import { useServer as useWsServer } from "graphql-ws/use/ws";
+
+import { makeExecutableSchema } from "@graphql-tools/schema";
 
 import { resolvers } from "./graphApi/resolvers.js";
-import { authMiddleware, handleLogin } from "./middleware/authentication.js";
+import {
+  authMiddleware,
+  decodeTokenForWebSocket,
+  handleLogin,
+} from "./middleware/authentication.js";
 import { getUserById } from "./controllers/UserController.js";
 import { createCompanyLoader } from "./controllers/CompanyController.js";
 
@@ -49,6 +59,8 @@ async function getContext({ req, res }) {
   return context;
 }
 
+// apolloServer.Schema = schemaForWebSocket; // Assign the schema to the Apollo Server instance for WebSocket support
+// typeDefs + resolvers = automatically combined to form "executable schema"
 const apolloServer = new ApolloServer({
   typeDefs,
   resolvers,
@@ -58,4 +70,30 @@ await apolloServer.start();
 
 app.use("/graphql", apolloMiddleware(apolloServer, { context: getContext }));
 
-export default app;
+// -----------------------------------------------------WEBSOCKET_CONFIG-----------------------------------------------------------
+
+async function getWsContext(connInfo) {
+  const { connectionParams } = connInfo;
+  const accessToken = connectionParams?.accessToken;
+  if (accessToken) {
+    const payload = decodeTokenForWebSocket(accessToken);
+    //console.log("decoded-payload", payload);
+    return { user: payload.sub };
+  }
+  return {};
+}
+const httpServer = createHttpServer(app);
+const wsServer = new WebSocketServer({ server: httpServer, path: "/graphql" });
+// makeExecutableSchema - is used to create a "explicit executable schema" that can be used by
+// both Apollo Server and the WebSocket server for subscriptions.
+const schemaForWebSocket = makeExecutableSchema({ typeDefs, resolvers });
+const configurationProperty = {
+  schema: schemaForWebSocket,
+  context: getWsContext,
+};
+
+// 1. new WebSocketServer() only sets up the connection layer.
+// 2. useWsServer() layers on the GraphQL execution engine so it can handle GraphQL operations(GraphQL subscription server).
+useWsServer(configurationProperty, wsServer);
+
+export { app, httpServer, wsServer };

@@ -22,13 +22,17 @@ export const authMiddleware = expressjwt({
   secret,
 });
 
+export function decodeTokenForWebSocket(token) {
+  return jwt.verify(token, secret);
+}
+
 export async function handleLogin(req, res) {
-  const { email, password } = req.body;
+  const { name, email, password } = req.body;
   const user = await getUserByEmail(email);
   if (!user || user.password !== password) {
     res.sendStatus(401);
   } else {
-    const claims = { sub: user.id, email: user.email };
+    const claims = { name: user.name, sub: user.id, email: user.email };
     const token = jwt.sign(claims, secret);
     res.json({ token });
   }

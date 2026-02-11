@@ -1,11 +1,15 @@
 import { connectDataBase } from "./connection/conn.js";
-import app from "./app.js";
+import { httpServer as mainServer } from "./app.js";
 
 connectDataBase();
 
-const server = app.listen(process.env.PORT, () => {
+const server = mainServer.listen(process.env.PORT, () => {
   console.log(
     `Server listening to the port: ${process.env.PORT} in  ${process.env.NODE_ENV} `,
+  );
+  console.log(`GraphQL endpoint: http://localhost:${process.env.PORT}/graphql`);
+  console.log(
+    "--------------------------------------------------------------------------",
   );
 });
 

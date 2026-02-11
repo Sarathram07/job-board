@@ -11,14 +11,14 @@ export function getAccessToken() {
   return localStorage.getItem(ACCESS_TOKEN_KEY);
 }
 
-export async function login(email, password) {
+export async function login(data) {
   console.log("API_URL:", API_URL);
   const response = await fetch(`${API_URL}/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify(data),
   });
   if (!response.ok) {
     return null;
@@ -43,6 +43,7 @@ export function logout() {
 function getUserFromToken(token) {
   const claims = jwtDecode(token);
   return {
+    name: claims.name,
     id: claims.sub,
     email: claims.email,
   };
