@@ -15,7 +15,11 @@ import { useServer as useWsServer } from "graphql-ws/use/ws";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 
 import { resolvers } from "./graphApi/resolvers.js";
-import { authMiddleware, handleLogin } from "./middleware/authentication.js";
+import {
+  authMiddleware,
+  decodeTokenForWebSocket,
+  handleLogin,
+} from "./middleware/authentication.js";
 import { getUserById } from "./controllers/UserController.js";
 import { createCompanyLoader } from "./controllers/CompanyController.js";
 
@@ -67,6 +71,17 @@ await apolloServer.start();
 app.use("/graphql", apolloMiddleware(apolloServer, { context: getContext }));
 
 // -----------------------------------------------------WEBSOCKET_CONFIG-----------------------------------------------------------
+
+async function getWsContext(connInfo) {
+  const { connectionParams } = connInfo;
+  const accessToken = connectionParams?.accessToken;
+  if (accessToken) {
+    const payload = decodeTokenForWebSocket(accessToken);
+    //console.log("decoded-payload", payload);
+    return { user: payload.sub };
+  }
+  return {};
+}
 const httpServer = createHttpServer(app);
 const wsServer = new WebSocketServer({ server: httpServer, path: "/graphql" });
 // makeExecutableSchema - is used to create a "explicit executable schema" that can be used by
@@ -74,7 +89,7 @@ const wsServer = new WebSocketServer({ server: httpServer, path: "/graphql" });
 const schemaForWebSocket = makeExecutableSchema({ typeDefs, resolvers });
 const configurationProperty = {
   schema: schemaForWebSocket,
-  // context: getContext,
+  context: getWsContext,
 };
 
 // 1. new WebSocketServer() only sets up the connection layer.

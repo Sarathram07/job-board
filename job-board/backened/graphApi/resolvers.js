@@ -110,7 +110,10 @@ export const resolvers = {
       // Subscription provide subscribe method which return
       // #AsyncIterator(protocol defined by JS language for objects that generate multiple values over time) to server
       // which listen to the event and send data to client when event is emitted.
-      subscribe: () => pubSub.asyncIterableIterator("NEW_MESSAGE_ADDED"),
+      subscribe: (_root, _args, context) => {
+        const user = requireAuth(context);
+        return pubSub.asyncIterableIterator("NEW_MESSAGE_ADDED");
+      },
     },
   },
 };

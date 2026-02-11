@@ -22,6 +22,10 @@ export const authMiddleware = expressjwt({
   secret,
 });
 
+export function decodeTokenForWebSocket(token) {
+  return jwt.verify(token, secret);
+}
+
 export async function handleLogin(req, res) {
   const { name, email, password } = req.body;
   const user = await getUserByEmail(email);

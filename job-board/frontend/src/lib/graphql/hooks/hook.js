@@ -92,7 +92,7 @@ function useMessages() {
   const { data } = useQuery(GET_ALL_MESSAGES);
   useSubscription(MESSAGE_ADDED_SUBSCRIPTION, {
     onData: (obj) => {
-      const { client, result } = obj;
+      const { client, data: result } = obj;
       const newMessage = result.data?.message;
       client.cache.updateQuery({ query: GET_ALL_MESSAGES }, (oldData) => {
         return { messages: [...oldData.messages, newMessage] };

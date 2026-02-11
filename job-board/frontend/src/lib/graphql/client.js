@@ -59,6 +59,7 @@ const newHttpLink = ApolloLink.from([authLink, httpLink]); // order of links is 
 
 const wsClient = createWsClient({
   url: import.meta.env.VITE_SERVER_WS_URL,
+  connectionParams: () => ({ accessToken: getAccessToken() }),
 });
 const wsLink = new GraphQLWsLink(wsClient);
 
