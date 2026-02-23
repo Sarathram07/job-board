@@ -10,7 +10,7 @@ import CreateJobPage from "./pages/CreateJobPage";
 import HomePage from "./pages/HomePage";
 import JobPage from "./pages/JobPage";
 import LoginPage from "./pages/LoginPage";
-import Chat from "./components/chat.jsx";
+import Chat from "./components/Chat.jsx";
 
 function App() {
   const navigate = useNavigate();
