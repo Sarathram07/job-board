@@ -1,0 +1,17 @@
+# Ignore all node_modules folders
+backened/node_modules/
+frontend/node_modules/
+
+# Ignore VS Code settings
+.vscode/
+
+# env files
+*.env
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
