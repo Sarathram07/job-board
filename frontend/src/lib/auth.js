@@ -42,9 +42,32 @@ export function logout() {
 
 function getUserFromToken(token) {
   const claims = jwtDecode(token);
+  const { issueDate, expDate } = calcExpDate(claims);
+
   return {
     name: claims.name,
     id: claims.sub,
     email: claims.email,
+    issueAt: issueDate,
+    expAt: expDate,
   };
+}
+
+function calcExpDate(claims) {
+  const iat = claims.iat;
+  // Token lifetime in seconds (e.g., 1 hour = 3600 seconds)
+  const tokenLifetime = 3600;
+
+  // Convert iat to human-readable date
+  const convertedDate = new Date(iat * 1000); // JS Date uses milliseconds
+  const issueDate = convertedDate.toLocaleDateString();
+
+  // Calculate expiration time
+  const exp = iat + tokenLifetime;
+  const newexp = new Date(exp * 1000);
+  const expDate = newexp.toLocaleDateString();
+  //console.log(expDate.toLocaleDateString()); //dateObj.toLocaleTimeString()
+  //console.log("Expires At:", expDate.toUTCString());
+
+  return { issueDate, expDate };
 }
