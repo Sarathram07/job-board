@@ -105,9 +105,15 @@ function useMessages() {
 }
 
 function useAddMessage() {
-  const [newMessageMutation] = useMutation(CREATE_NEW_MESSAGE);
-
+  const [newMessageMutation, result] = useMutation(CREATE_NEW_MESSAGE);
+  console.log(result.loading, result.data, result.error);
   const addMessage = async (text) => {
+    // console.log(
+    //   "Inside addMessage ",
+    //   result.loading,
+    //   result.data,
+    //   result.error,
+    // );
     const {
       data: { message },
     } = await newMessageMutation({
@@ -119,6 +125,12 @@ function useAddMessage() {
       //   });
       // },
     });
+    // console.log(
+    //   "After newMessageMutation",
+    //   result.loading,
+    //   result.data,
+    //   result.error,
+    // );
     return message;
   };
 

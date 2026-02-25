@@ -1,7 +1,7 @@
 function MessageInput({ onSend }) {
-  const handleKeyDown = (event) => {
+  const handleKeyDown = async (event) => {
     if (event.key === "Enter") {
-      onSend(event.target.value);
+      await onSend(event.target.value);
       event.target.value = "";
     }
   };
